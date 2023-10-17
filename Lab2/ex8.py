@@ -1,5 +1,5 @@
 # 8
-def div_ascii(x, list_strings, flag):
+def div_ascii(x=1, list_strings, flag=True):
     list_of_list_ch = []
     for string in list_strings:
         list_of_ch = []
