@@ -8,7 +8,7 @@ def validate_dict(tuple_set, dictionar):
             if key not in dictionar:
                 return False
             value = dictionar[key]
-            if value.find(t[2], 1, len(value) - 1) == -1:
+            if value.find(t[2], 1, len(value)) == -1 or value.endswith(t[2]):
                 return False
             if value.find(t[1], 0, len(value)) != 0:
                 return False
