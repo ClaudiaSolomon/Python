@@ -35,7 +35,7 @@ class Triangle(Shape):
         self.edge3 = edge3
 
     def area_calcul(self):
-        s = self.perimeter_calcul()
+        s = self.perimeter_calcul()/2
         self.area = math.sqrt(s * (s - self.edge1) * (s - self.edge2) * (s - self.edge3))
         return super().area_calcul()
 
