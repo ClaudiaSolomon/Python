@@ -11,7 +11,10 @@ try:
         print(receive)
         # if "You won!" in receive or "You lost!" in receive:
         #     break
-        value = input()
+        if "Game begins" in receive:
+            value="jhdjsdjhk"
+        else:
+            value = input()
         s.send(value.encode())
         if value.lower() == "exit":
             break
