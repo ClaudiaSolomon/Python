@@ -65,6 +65,11 @@ def verify_end_game_reached():
             return False
 def on_new_client(clientsocket, addr,player):
     global word,description,won,word_to_guess,mistakes
+    word=""
+    description=""
+    word_to_guess=""
+    mistakes=0
+    won=0
     try:
         # players.append(clientsocket)
         if player % 2 != 0:
@@ -97,6 +102,7 @@ def on_new_client(clientsocket, addr,player):
                 event_player2.clear() 
         else:
             event_player1.wait()
+            event_player1.clear()
             create_word_to_guess(word)
             clientsocket.send(f'Welcome player 2! \n The word is: {word_to_guess} \n The description is: {description} \n Start guessing: '.encode())
             while True:
