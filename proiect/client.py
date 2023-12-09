@@ -9,8 +9,8 @@ try:
     while True:
         receive=s.recv(1024).decode()
         print(receive)
-        # if "You won!" in receive or "You lost!" in receive:
-        #     break
+        if "won" in receive or "lost" in receive:
+            break
         if "Game begins" in receive:
             value="jhdjsdjhk"
         else:

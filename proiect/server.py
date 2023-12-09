@@ -17,20 +17,13 @@ description=""
 word_to_guess=""
 
 spanzuratori=[
-    "",
-    "O",
-    "O \
-     |",
-    "O \
-    /|   ",
-    "O \
-    /|\   ",
-    "O \
-    /|\ \
-    /      ",
-    "O \
-    /|\ \
-    / \     "
+    "-",
+    " - \n  O",
+    " - \n  O \n  |",
+    " - \n  O \n /|   ",
+    " - \n  O \n /|\   ",
+    " - \n  O \n /|\ \n /      ",
+    " - \n  O \n /|\ \n / \     "
 ]
 mistakes=0
 won=0 
@@ -71,14 +64,15 @@ def verify_end_game_reached():
         else:
             return False
 def on_new_client(clientsocket, addr,player):
-    global word,description,won,word_to_guess
+    global word,description,won,word_to_guess,mistakes
     try:
-        players.append(clientsocket)
+        # players.append(clientsocket)
         if player % 2 != 0:
             nr=2
             clientsocket.send('Welcome player 1, choose a word: '.encode())
             while nr:
-                string = clientsocket.recv(1024).decode()
+                string1 = clientsocket.recv(1024).decode()
+                string = string1.lower()
                 print(string)
                 if nr==2:
                     valoare = valid_player1(string)
@@ -106,20 +100,21 @@ def on_new_client(clientsocket, addr,player):
             create_word_to_guess(word)
             clientsocket.send(f'Welcome player 2! \n The word is: {word_to_guess} \n The description is: {description} \n Start guessing: '.encode())
             while True:
-                string = clientsocket.recv(1024).decode()
+                string1 = clientsocket.recv(1024).decode()
+                string = string1.lower()
                 print(string)
                 valoare = valid_player2(string)
                 if valoare:
                     modify_word_to_guess(string)
                     if verify_end_game_reached():
                         if won==1:
-                            clientsocket.send(f'{word_to_guess} \n {spanzuratori[mistakes]} \n You won!'.encode())
+                            clientsocket.send(f'{word_to_guess} \n mistakes:{mistakes} \n {spanzuratori[mistakes]}\n You won!'.encode())
                         else:
-                            clientsocket.send(f'{word_to_guess} \n {spanzuratori[mistakes]} \n You lost!'.encode())
+                            clientsocket.send(f'{word_to_guess} \n mistakes:{mistakes} \n {spanzuratori[mistakes]}\n You lost!'.encode())
                         event_player2.set()
                         break
                     else:
-                        clientsocket.send(f'{word_to_guess} \n {spanzuratori[mistakes]}'.encode())
+                        clientsocket.send(f'{word_to_guess} \n mistakes:{mistakes}\n {spanzuratori[mistakes]}'.encode())
                 else:
                     clientsocket.send('Invalid letter'.encode())
     except Exception as e:
@@ -127,7 +122,7 @@ def on_new_client(clientsocket, addr,player):
 
     finally:
         print(f"Player {player} disconnected")
-        players.remove(clientsocket)
+        # players.remove(clientsocket)
         # clientsocket.close()
         # if players==[]:
         #     s.close()
