@@ -11,7 +11,7 @@ try:
         print(receive)
         if "won" in receive or "lost" in receive:
             break
-        if "Game begins" in receive:
+        if "Game begins" in receive or "Current word" in receive:
             value="jhdjsdjhk"
         else:
             value = input()

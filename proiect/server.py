@@ -1,5 +1,6 @@
 import socket
 import threading
+import time
 
 s = socket.socket()
 port = 12345
@@ -11,6 +12,7 @@ player = 0
 players = []
 event_player1= threading.Event()
 event_player2=threading.Event()
+event_word_update=threading.Event()
 
 word=""
 description=""
@@ -52,6 +54,10 @@ def modify_word_to_guess(string):
     else:
         mistakes+=1 
 
+def current_state_of_game():
+    global word_to_guess,mistakes,spanzuratori
+    return f'Current word guessed: {word_to_guess} \n Mistakes: {mistakes} \n {spanzuratori[mistakes]}'
+
 def verify_end_game_reached():
     global won,word_to_guess,mistakes
     if "_" not in word_to_guess:
@@ -92,14 +98,27 @@ def on_new_client(clientsocket, addr,player):
                     clientsocket.send('Game begins'.encode())
                     nr-=1
                     event_player1.set()
-                    event_player2.wait()
-                    break
-            if verify_end_game_reached():
-                if won == 1:
-                    clientsocket.send('Game finished - player won!'.encode())
-                else:
-                    clientsocket.send('Game finished - player lost!'.encode())
-                event_player2.clear() 
+                    while True:
+                        event_word_update.wait()
+                        if verify_end_game_reached()==True:
+                            if won == 1:
+                                clientsocket.send(f'{current_state_of_game()} \n Game finished - player won!'.encode())
+                            else:
+                                clientsocket.send(f'{current_state_of_game()} \n Game finished - player lost!'.encode())
+                            break
+                        else:
+                            clientsocket.send(current_state_of_game().encode())
+                        event_word_update.clear()
+                            # break
+            #         event_player2.wait()
+            #         event_player2.clear()
+            #         break
+            # if verify_end_game_reached():
+            #     if won == 1:
+            #         clientsocket.send('Game finished - player won!'.encode())
+            #     else:
+            #         clientsocket.send('Game finished - player lost!'.encode())
+            #     event_player2.clear() 
         else:
             event_player1.wait()
             event_player1.clear()
@@ -113,14 +132,17 @@ def on_new_client(clientsocket, addr,player):
                 if valoare:
                     modify_word_to_guess(string)
                     if verify_end_game_reached():
+                        event_word_update.set()
+                        # time.sleep(2)
                         if won==1:
                             clientsocket.send(f'{word_to_guess} \n mistakes:{mistakes} \n {spanzuratori[mistakes]}\n You won!'.encode())
                         else:
                             clientsocket.send(f'{word_to_guess} \n mistakes:{mistakes} \n {spanzuratori[mistakes]}\n You lost!'.encode())
-                        event_player2.set()
-                        break
+                        # event_player2.set()
+                        # break
                     else:
-                        clientsocket.send(f'{word_to_guess} \n mistakes:{mistakes}\n {spanzuratori[mistakes]}'.encode())
+                        clientsocket.send(f'{word_to_guess} \n mistakes:{mistakes} \n You make {6-mistakes} mistakes and you lose! \n {spanzuratori[mistakes]}'.encode())
+                        event_word_update.set()
                 else:
                     clientsocket.send('Invalid letter'.encode())
     except Exception as e:
