@@ -1,6 +1,5 @@
 import socket
 import threading
-import time
 
 s = socket.socket()
 port = 12345
@@ -109,7 +108,6 @@ def on_new_client(clientsocket, addr,player):
                         else:
                             clientsocket.send(current_state_of_game().encode())
                         event_word_update.clear()
-                            # break
             #         event_player2.wait()
             #         event_player2.clear()
             #         break
@@ -139,7 +137,7 @@ def on_new_client(clientsocket, addr,player):
                         else:
                             clientsocket.send(f'{word_to_guess} \n mistakes:{mistakes} \n {spanzuratori[mistakes]}\n You lost!'.encode())
                         # event_player2.set()
-                        # break
+                        break
                     else:
                         clientsocket.send(f'{word_to_guess} \n mistakes:{mistakes} \n You make {6-mistakes} mistakes and you lose! \n {spanzuratori[mistakes]}'.encode())
                         event_word_update.set()
@@ -150,10 +148,7 @@ def on_new_client(clientsocket, addr,player):
 
     finally:
         print(f"Player {player} disconnected")
-        # players.remove(clientsocket)
-        # clientsocket.close()
-        # if players==[]:
-        #     s.close()
+        clientsocket.close()
 
 while True:
     c, addr = s.accept()
