@@ -8,7 +8,6 @@ s.bind(('', port))
 s.listen(2)
 
 player = 0
-players = []
 event_player1= threading.Event()
 event_player2=threading.Event()
 event_word_update=threading.Event()
@@ -28,12 +27,20 @@ spanzuratori=[
 ]
 mistakes=0
 won=0 
-
+letters=[]
 def valid_player1(string):
     return string.isalpha()
 
 def valid_player2(string):
     return string.isalpha() and len(string) == 1
+
+def repetitive_letter(string):
+    global letters
+    if string in letters:
+        return True
+    else:
+        letters.append(string)
+        return False
 
 def create_word_to_guess(string):
     global word_to_guess
@@ -129,19 +136,22 @@ def on_new_client(clientsocket, addr,player):
                 print(string)
                 valoare = valid_player2(string)
                 if valoare:
-                    modify_word_to_guess(string)
-                    if verify_end_game_reached():
-                        event_word_update.set()
-                        # time.sleep(2)
-                        if won==1:
-                            clientsocket.send(f'{word_to_guess} \n mistakes:{mistakes} \n {spanzuratori[mistakes]}\n You won!'.encode())
+                    if repetitive_letter(string)==False:
+                        modify_word_to_guess(string)
+                        if verify_end_game_reached():
+                            event_word_update.set()
+                            # time.sleep(2)
+                            if won==1:
+                                clientsocket.send(f'{word_to_guess} \n mistakes:{mistakes} \n {spanzuratori[mistakes]}\n You won!'.encode())
+                            else:
+                                clientsocket.send(f'{word_to_guess} \n mistakes:{mistakes} \n {spanzuratori[mistakes]}\n You lost!'.encode())
+                            # event_player2.set()
+                            break
                         else:
-                            clientsocket.send(f'{word_to_guess} \n mistakes:{mistakes} \n {spanzuratori[mistakes]}\n You lost!'.encode())
-                        # event_player2.set()
-                        break
+                            clientsocket.send(f'{word_to_guess} \n mistakes:{mistakes} \n You make {6-mistakes} mistakes and you lose! \n {spanzuratori[mistakes]}'.encode())
+                            event_word_update.set()
                     else:
-                        clientsocket.send(f'{word_to_guess} \n mistakes:{mistakes} \n You make {6-mistakes} mistakes and you lose! \n {spanzuratori[mistakes]}'.encode())
-                        event_word_update.set()
+                        clientsocket.send(f'Letter already tried'.encode())
                 else:
                     clientsocket.send('Invalid letter'.encode())
     except Exception as e:
