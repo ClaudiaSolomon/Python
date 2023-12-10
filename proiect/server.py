@@ -99,6 +99,7 @@ def on_new_client(clientsocket, addr,player):
                     event_player1.set()
                     while True:
                         event_word_update.wait()
+                        event_word_update.clear()
                         if verify_end_game_reached()==True:
                             if won == 1:
                                 clientsocket.send(f'{current_state_of_game()} \n Game finished - player won!'.encode())
@@ -107,7 +108,7 @@ def on_new_client(clientsocket, addr,player):
                             break
                         else:
                             clientsocket.send(current_state_of_game().encode())
-                        event_word_update.clear()
+                        # event_word_update.clear()
             #         event_player2.wait()
             #         event_player2.clear()
             #         break
