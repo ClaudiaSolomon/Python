@@ -9,7 +9,6 @@ s.listen(2)
 
 player = 0
 event_player1= threading.Event()
-event_player2=threading.Event()
 event_word_update=threading.Event()
 
 word=""
@@ -86,7 +85,6 @@ def on_new_client(clientsocket, addr,player):
     letters=[]
     letter=""
     try:
-        # players.append(clientsocket)
         if player % 2 != 0:
             nr=2
             clientsocket.send('Welcome player 1, choose a word: '.encode())
@@ -118,16 +116,6 @@ def on_new_client(clientsocket, addr,player):
                             break
                         else:
                             clientsocket.send(current_state_of_game().encode())
-                        # event_word_update.clear()
-            #         event_player2.wait()
-            #         event_player2.clear()
-            #         break
-            # if verify_end_game_reached():
-            #     if won == 1:
-            #         clientsocket.send('Game finished - player won!'.encode())
-            #     else:
-            #         clientsocket.send('Game finished - player lost!'.encode())
-            #     event_player2.clear() 
         else:
             event_player1.wait()
             event_player1.clear()
@@ -143,17 +131,13 @@ def on_new_client(clientsocket, addr,player):
                         modify_word_to_guess(letter)
                         event_word_update.set()
                         if verify_end_game_reached():
-                            # event_word_update.set()
-                            # time.sleep(2)
                             if won==1:
                                 clientsocket.send(f'{word_to_guess} \n mistakes:{mistakes} \n {spanzuratori[mistakes]}\n You won!'.encode())
                             else:
                                 clientsocket.send(f'{word_to_guess} \n mistakes:{mistakes} \n {spanzuratori[mistakes]}\n You lost!'.encode())
-                            # event_player2.set()
                             break
                         else:
                             clientsocket.send(f'{word_to_guess} \n mistakes:{mistakes} \n You make {6-mistakes} mistakes and you lose! \n {spanzuratori[mistakes]}'.encode())
-                            # event_word_update.set()
                     else:
                         clientsocket.send(f'Letter already tried'.encode())
                         event_word_update.set()
