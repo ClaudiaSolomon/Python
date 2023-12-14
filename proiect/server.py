@@ -75,7 +75,8 @@ def verify_end_game_reached():
             return True
         else:
             return False
-def on_new_client(clientsocket, addr,player):
+
+def initializare_joc():
     global word,description,won,word_to_guess,mistakes,letter,letters
     word=""
     description=""
@@ -84,6 +85,8 @@ def on_new_client(clientsocket, addr,player):
     won=0
     letters=[]
     letter=""
+def on_new_client(clientsocket, addr,player):
+    global word,description,won,word_to_guess,mistakes,letter,letters
     try:
         if player % 2 != 0:
             nr=2
@@ -153,5 +156,7 @@ def on_new_client(clientsocket, addr,player):
 while True:
     c, addr = s.accept()
     player += 1
+    if player%2!=0:
+        initializare_joc()
     t = threading.Thread(target=on_new_client, args=(c, addr,player))
     t.start()
