@@ -130,10 +130,12 @@ def client1(clientsocket, addr,player):
 def client2(clientsocket, addr,player):
     global word,description,won,word_to_guess,mistakes,letter,letters
     try:
+        clientsocket.send(f'Welcome player 2! Wait for player 1 to choose a word...'.encode())
+        clientsocket.recv(1024).decode()
         event_player1.wait()
         event_player1.clear()
         create_word_to_guess(word)
-        clientsocket.send(f'Welcome player 2! \n The word is: {word_to_guess} \n The description is: {description} \n Start guessing: '.encode())
+        clientsocket.send(f'The word is: {word_to_guess} \n The description is: {description} \n Start guessing: '.encode())
         while True:
             string1 = clientsocket.recv(1024).decode()
             letter = string1.lower()
