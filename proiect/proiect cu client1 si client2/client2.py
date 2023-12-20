@@ -16,7 +16,6 @@ try:
         else:
             value = input()
             if not value:
-                print("Input is null or empty")
                 while not value:
                     value=input("Retry:\n")
         s.send(value.encode())

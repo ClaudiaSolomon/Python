@@ -15,7 +15,6 @@ try:
             value="jhdjsdjhk"
         else:
             value = input()
-            print("Input is null or empty")
             while not value:
                 value=input("Retry:\n")
         s.send(value.encode())
